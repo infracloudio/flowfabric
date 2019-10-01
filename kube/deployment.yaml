@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flowfabric-deployment
+  labels:
+    app: ff
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ff
+  template:
+    metadata:
+      labels:
+        app: ff
+    spec:
+      hostNetwork: true
+      containers:
+      - name: ff
+        image: yusufk53/flowfabric:latest

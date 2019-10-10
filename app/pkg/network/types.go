@@ -12,3 +12,8 @@ var (
 	// IfaceCIDRMap - map of network interface names and associated CIDR
 	IfaceCIDRMap = make(map[string]string)
 )
+
+type NetworkInfo struct {
+	Src string
+	Dst string
+}

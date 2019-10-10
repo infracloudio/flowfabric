@@ -6,6 +6,9 @@ import (
 
 var (
 
+	// SERVER_PORT is the port at which the gRPC server would listen
+	SERVER_PORT = "50051"
+
 	// KUBECONFIG env variable to be set if application running outside of k8s cluster (optional)
 	KUBECONFIG = os.Getenv("KUBECONFIG")
 

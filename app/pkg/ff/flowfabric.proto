@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package ff;
+
+// NetworkCapture service definition
+service NetworkCapture {
+    // Capture captures network
+    rpc Capture (stream CaptureInfo) returns (stream CaptureInfo) {}
+}
+
+// CaputreInfo containing network details
+message CaptureInfo {
+    string src = 1;
+    string dst = 2;
+    bool stop = 3;
+}

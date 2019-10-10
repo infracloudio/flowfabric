@@ -158,7 +158,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:9f7eae014eed6507ce24fb893874516db03e911fe745a3fd6cd3adcbc4c7e8c9"
+  digest = "1:7a4eaae8773e8fccca11c5c60d5393235e2dc880356f1dc6bc753b114f17e0e6"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -167,6 +167,8 @@
     "http2",
     "http2/hpack",
     "idna",
+    "internal/timeseries",
+    "trace",
   ]
   pruneopts = "UT"
   revision = "1a5e07d1ff72da30f660d3c95b312a20be31173c"
@@ -245,6 +247,56 @@
   pruneopts = "UT"
   revision = "c71d63e301d75423acb410203c747cad31e9a5e7"
   version = "v1.6.3"
+
+[[projects]]
+  branch = "master"
+  digest = "1:583a0c80f5e3a9343d33aea4aead1e1afcc0043db66fdf961ddd1fe8cd3a4faf"
+  name = "google.golang.org/genproto"
+  packages = ["googleapis/rpc/status"]
+  pruneopts = "UT"
+  revision = "a023cd5227bd25fd1f5c5633743ff3eacc93d169"
+
+[[projects]]
+  digest = "1:6cd77d0b616d2dcebd363dfecba593f27b0151fc82cdb5fbfb96c5a7cfbc95b5"
+  name = "google.golang.org/grpc"
+  packages = [
+    ".",
+    "balancer",
+    "balancer/base",
+    "balancer/roundrobin",
+    "binarylog/grpc_binarylog_v1",
+    "codes",
+    "connectivity",
+    "credentials",
+    "credentials/internal",
+    "encoding",
+    "encoding/proto",
+    "grpclog",
+    "internal",
+    "internal/backoff",
+    "internal/balancerload",
+    "internal/binarylog",
+    "internal/channelz",
+    "internal/envconfig",
+    "internal/grpcrand",
+    "internal/grpcsync",
+    "internal/syscall",
+    "internal/transport",
+    "keepalive",
+    "metadata",
+    "naming",
+    "peer",
+    "resolver",
+    "resolver/dns",
+    "resolver/passthrough",
+    "serviceconfig",
+    "stats",
+    "status",
+    "tap",
+  ]
+  pruneopts = "UT"
+  revision = "f6d0f9ee430895e87ef1ceb5ac8f39725bafceef"
+  version = "v1.24.0"
 
 [[projects]]
   digest = "1:ef72505cf098abdd34efeea032103377bec06abb61d8a06f002d5d296a4b1185"
@@ -450,9 +502,13 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/golang/protobuf/proto",
     "github.com/google/gopacket",
     "github.com/google/gopacket/layers",
     "github.com/google/gopacket/pcap",
+    "google.golang.org/grpc",
+    "google.golang.org/grpc/codes",
+    "google.golang.org/grpc/status",
     "k8s.io/api/core/v1",
     "k8s.io/apimachinery/pkg/apis/meta/v1",
     "k8s.io/client-go/kubernetes",

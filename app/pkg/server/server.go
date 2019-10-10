@@ -5,8 +5,8 @@ import (
 	"net"
 
 	"github.com/infracloudio/flowfabric/app/pkg/config"
-	pb "github.com/infracloudio/flowfabric/app/pkg/proto"
 	"github.com/infracloudio/flowfabric/app/pkg/network"
+	pb "github.com/infracloudio/flowfabric/app/pkg/proto"
 	"github.com/infracloudio/flowfabric/app/pkg/runtime"
 	"google.golang.org/grpc"
 )
@@ -28,7 +28,7 @@ func (s *server) Capture(req *pb.CaptureRequest, stream pb.NetworkCapture_Captur
 	)
 
 	// Initiate network capture
-	go network.Info(runtime.Iface, networkInfo, stop)
+	go network.Info(req.Pod, runtime.Iface, networkInfo, stop)
 
 	// Send back stream response
 	for {

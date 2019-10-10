@@ -75,9 +75,9 @@ func Capture(iface string) {
 	}
 }
 
-func Info(iface string, info chan NetworkInfo, stop chan bool) {
+func Info(pod, iface string, info chan NetworkInfo, stop chan bool) {
 
-	log.Printf("Serving Info from interface '%s'", iface)
+	log.Printf("Serving info from interface '%s'", iface)
 
 	// Open device
 	handle, err = pcap.OpenLive(iface, snapshotlen, promiscuous, timeout)
@@ -121,11 +121,11 @@ func Info(iface string, info chan NetworkInfo, stop chan bool) {
 						dstVal = k8s.IPPodMap[dstVal]["Name"]
 					}
 
-					fmt.Println("IPv4: ", srcVal, "->", dstVal)
-
-					networkInfo := NetworkInfo{Src: srcVal, Dst: dstVal}
-					info <- networkInfo
-
+					if pod == "default" || pod == srcVal || pod == dstVal {
+						fmt.Println("IPv4: ", srcVal, "->", dstVal)
+						networkInfo := NetworkInfo{Src: srcVal, Dst: dstVal}
+						info <- networkInfo
+					}
 				}
 				if layerType == layers.LayerTypeTCP {
 					fmt.Println("TCP Port: ", tcpLayer.SrcPort, "->", tcpLayer.DstPort)

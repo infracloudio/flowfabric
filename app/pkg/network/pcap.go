@@ -5,10 +5,10 @@ import (
 	"log"
 	"time"
 
-	"github.com/infracloudio/flowfabric/app/pkg/k8s"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
+	"github.com/infracloudio/flowfabric/app/pkg/k8s"
 )
 
 var (
@@ -70,6 +70,67 @@ func Capture(iface string) {
 			if layerType == layers.LayerTypeTCP {
 				fmt.Println("TCP Port: ", tcpLayer.SrcPort, "->", tcpLayer.DstPort)
 				fmt.Println("TCP SYN:", tcpLayer.SYN, " | ACK:", tcpLayer.ACK)
+			}
+		}
+	}
+}
+
+func Info(iface string, info chan NetworkInfo, stop chan bool) {
+
+	log.Printf("Serving Info from interface '%s'", iface)
+
+	// Open device
+	handle, err = pcap.OpenLive(iface, snapshotlen, promiscuous, timeout)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer handle.Close()
+
+	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
+	for packet := range packetSource.Packets() {
+		select {
+		case <-stop:
+			log.Printf("Stopping network capture...")
+			return
+		default:
+			parser := gopacket.NewDecodingLayerParser(
+				layers.LayerTypeEthernet,
+				&ethLayer,
+				&ipLayer,
+				&tcpLayer,
+			)
+			foundLayerTypes := []gopacket.LayerType{}
+
+			err := parser.DecodeLayers(packet.Data(), &foundLayerTypes)
+			if err != nil {
+				fmt.Println("Trouble decoding layers: ", err)
+			}
+
+			for _, layerType := range foundLayerTypes {
+				if layerType == layers.LayerTypeIPv4 {
+
+					srcVal := ipLayer.SrcIP.String()
+					dstVal := ipLayer.DstIP.String()
+
+					// Add pod info
+					if _, ok := k8s.IPPodMap[srcVal]; ok {
+						srcVal = k8s.IPPodMap[srcVal]["Name"]
+					}
+
+					if _, ok := k8s.IPPodMap[dstVal]; ok {
+						dstVal = k8s.IPPodMap[dstVal]["Name"]
+					}
+
+					fmt.Println("IPv4: ", srcVal, "->", dstVal)
+
+					networkInfo := NetworkInfo{Src: srcVal, Dst: dstVal}
+					info <- networkInfo
+
+				}
+				if layerType == layers.LayerTypeTCP {
+					fmt.Println("TCP Port: ", tcpLayer.SrcPort, "->", tcpLayer.DstPort)
+					fmt.Println("TCP SYN:", tcpLayer.SYN, " | ACK:", tcpLayer.ACK)
+				}
 			}
 		}
 	}

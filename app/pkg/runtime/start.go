@@ -9,6 +9,10 @@ import (
 	"github.com/infracloudio/flowfabric/app/pkg/network"
 )
 
+var (
+	Iface string
+)
+
 // Start figures out the interface that needs to be monitored for network
 // capture and initiates the network capture
 func Start() {
@@ -17,7 +21,7 @@ func Start() {
 	IfaceCount := make(map[string]int)
 
 	// Populate the IfaceCount map
-	for ip, _ := range k8s.IPPodMap {
+	for ip := range k8s.IPPodMap {
 
 		// fmt.Printf("IPAddress: '%s', Labels: '%s'\n", ip, labels)
 
@@ -53,6 +57,7 @@ func Start() {
 
 	log.Printf("Monitoring network interface: '%s'", iface)
 
+	Iface = iface
 	// Initiate network capture
-	network.Capture(iface)
+	// network.Capture(iface)
 }

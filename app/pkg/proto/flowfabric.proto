@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package proto;
+
+// NetworkCapture service definition
+service NetworkCapture {
+    // Capture captures network
+    rpc Capture (CaptureRequest) returns (stream CaptureResponse) {}
+}
+
+// CaptureRequest containing network capture request
+message CaptureRequest {
+    string pod = 1;
+}
+
+// CaputreResponse containing network details
+message CaptureResponse {
+    string src = 1;
+    string dst = 2;
+}

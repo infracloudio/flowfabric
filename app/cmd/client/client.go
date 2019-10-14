@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"io"
 	"log"
-	"os"
 
 	"github.com/infracloudio/flowfabric/app/pkg/config"
 	pb "github.com/infracloudio/flowfabric/app/pkg/proto"
@@ -19,11 +19,9 @@ var (
 
 func main() {
 
-	// pod name
-	pod := "default"
-	if len(os.Args) > 1 {
-		pod = os.Args[1]
-	}
+	// Parse command line options
+	pod := flag.String("pod", "all", "Name of the pod to monitor network traffic")
+	flag.Parse()
 
 	// setup a connection to the server
 	url := address + port
@@ -37,7 +35,7 @@ func main() {
 	c := pb.NewNetworkCaptureClient(conn)
 
 	// request stream
-	s, err := c.Capture(ctx, &pb.CaptureRequest{Pod: pod})
+	s, err := c.Capture(ctx, &pb.CaptureRequest{Pod: *pod})
 	if err != nil {
 		log.Fatalf("Failed to create stream handler. Error: '%s'", err.Error())
 	}

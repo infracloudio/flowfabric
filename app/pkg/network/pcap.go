@@ -77,7 +77,7 @@ func Capture(iface string) {
 
 func Info(pod, iface string, info chan NetworkInfo, stop chan bool) {
 
-	log.Printf("Serving info from interface '%s'", iface)
+	log.Printf("Monitoring network traffic for '%s' pod(s) on interface '%s'", pod, iface)
 
 	var (
 		snapshotlen  int32 = 1024
@@ -136,7 +136,7 @@ func Info(pod, iface string, info chan NetworkInfo, stop chan bool) {
 				}
 
 				// Filter pod info
-				if pod == "default" || pod == srcVal || pod == dstVal {
+				if pod == "all" || pod == srcVal || pod == dstVal {
 					ni.SrcIP = srcVal
 					ni.DstIP = dstVal
 				}

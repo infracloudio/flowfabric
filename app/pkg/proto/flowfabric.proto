@@ -15,6 +15,8 @@ message CaptureRequest {
 
 // CaputreResponse containing network details
 message CaptureResponse {
-    string src = 1;
-    string dst = 2;
+    string srcIp = 1;
+    string dstIp = 2;
+    string srcPort = 3;
+    string dstPort = 4;
 }

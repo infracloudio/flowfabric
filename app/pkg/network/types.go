@@ -14,6 +14,8 @@ var (
 )
 
 type NetworkInfo struct {
-	Src string
-	Dst string
+	SrcIP   string
+	DstIP   string
+	SrcPort string
+	DstPort string
 }

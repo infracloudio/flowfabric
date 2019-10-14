@@ -33,7 +33,14 @@ func (s *server) Capture(req *pb.CaptureRequest, stream pb.NetworkCapture_Captur
 	// Send back stream response
 	for {
 		ni := <-networkInfo
-		r := &pb.CaptureResponse{Src: ni.Src, Dst: ni.Dst}
+
+		// create response
+		r := &pb.CaptureResponse{
+			SrcIp:   ni.SrcIP,
+			DstIp:   ni.DstIP,
+			SrcPort: ni.SrcPort,
+			DstPort: ni.DstPort,
+		}
 		err := stream.Send(r)
 		if err != nil {
 			log.Printf("Failed to send stream to client. Error: '%s'", err.Error())

@@ -44,13 +44,15 @@ func main() {
 
 	// Receive stream
 	for {
-		r, err := s.Recv()
+		ni, err := s.Recv()
 		if err == io.EOF {
 			return
 		}
 		if err != nil {
 			log.Fatalf("Failed to receive response. Error: '%s'", err.Error())
 		}
-		fmt.Println("IPv4: ", r.Src, "->", r.Dst)
+		fmt.Printf("%-5s %s -> %s\n", "IPv4:", ni.SrcIp, ni.DstIp)
+		fmt.Printf("%-5s %s -> %s\n", "Port:", ni.SrcPort, ni.DstPort)
+		fmt.Println()
 	}
 }

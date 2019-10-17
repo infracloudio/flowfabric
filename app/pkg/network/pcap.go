@@ -87,7 +87,6 @@ func Info(pod, iface string, info chan NetworkInfo, stop chan bool) {
 		err     error
 		timeout time.Duration = -1 * time.Second
 		handle  *pcap.Handle
-		ni      NetworkInfo
 	)
 
 	// Open device
@@ -107,6 +106,8 @@ func Info(pod, iface string, info chan NetworkInfo, stop chan bool) {
 			log.Printf("Stopping network capture...")
 			return
 		default:
+
+			var ni NetworkInfo
 
 			// Check if the packet has IPv4 layer
 			ipLayer := packet.Layer(layers.LayerTypeIPv4)
@@ -139,7 +140,13 @@ func Info(pod, iface string, info chan NetworkInfo, stop chan bool) {
 				if pod == "all" || pod == srcVal || pod == dstVal {
 					ni.SrcIP = srcVal
 					ni.DstIP = dstVal
+				} else {
+					// Filter out undesired values
+					continue
 				}
+			} else {
+				// IP layer not present
+				continue
 			}
 
 			// Check if the packet has TCP layer

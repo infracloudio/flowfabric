@@ -80,13 +80,12 @@ func Info(pod, iface string, info chan NetworkInfo, stop chan bool) {
 	log.Printf("Monitoring network traffic for '%s' pod(s) on interface '%s'", pod, iface)
 
 	var (
-		snapshotlen  int32 = 1024
-		promiscuous        = false
-		networkCache       = make(map[string]bool)
+		snapshotlen int32         = 1024
+		promiscuous bool          = false
+		timeout     time.Duration = -1 * time.Second
 
-		err     error
-		timeout time.Duration = -1 * time.Second
-		handle  *pcap.Handle
+		err    error
+		handle *pcap.Handle
 	)
 
 	// Open device
@@ -103,7 +102,7 @@ func Info(pod, iface string, info chan NetworkInfo, stop chan bool) {
 	for packet := range packetSource.Packets() {
 		select {
 		case <-stop:
-			log.Printf("Stopping network capture...")
+			log.Printf("Stopping network capture for '%s' pods(s) on interface '%s'", pod, iface)
 			return
 		default:
 
@@ -127,23 +126,9 @@ func Info(pod, iface string, info chan NetworkInfo, stop chan bool) {
 					dstVal = k8s.IPPodMap[dstVal]["Name"]
 				}
 
-				// Check cache for deduplication
-				possibleVal1 := fmt.Sprintf("%s-%s", srcVal, dstVal)
-				possibleVal2 := fmt.Sprintf("%s-%s", dstVal, srcVal)
-				if networkCache[possibleVal1] || networkCache[possibleVal2] {
-					continue
-				} else {
-					networkCache[possibleVal1] = true
-				}
+				ni.SrcIP = srcVal
+				ni.DstIP = dstVal
 
-				// Filter pod info
-				if pod == "all" || pod == srcVal || pod == dstVal {
-					ni.SrcIP = srcVal
-					ni.DstIP = dstVal
-				} else {
-					// Filter out undesired values
-					continue
-				}
 			} else {
 				// IP layer not present
 				continue
@@ -157,10 +142,6 @@ func Info(pod, iface string, info chan NetworkInfo, stop chan bool) {
 				ni.SrcPort = tcp.SrcPort.String()
 				ni.DstPort = tcp.DstPort.String()
 			}
-
-			fmt.Printf("%-5s %s -> %s\n", "IPv4:", ni.SrcIP, ni.DstIP)
-			fmt.Printf("%-5s %s -> %s\n", "Port:", ni.SrcPort, ni.DstPort)
-			fmt.Println()
 			info <- ni
 		}
 	}
